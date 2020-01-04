@@ -1,0 +1,25 @@
+.card-container {
+    width: 100%;;
+    display: flex;
+    flex-wrap: wrap;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.left-nav {
+    width: 20%;
+    aside {
+        max-width: 100%;
+    }
+}
+
+.product-section {
+    width: 80%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.pagination-custom {
+    padding: 15px;
+    margin-left: 20%;
+}
