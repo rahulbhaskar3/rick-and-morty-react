@@ -4,8 +4,6 @@ import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import Users from './components/users';
-import Contact from './components/contact'; 
 import {PrivateRoute}  from './helpers/privateRoute';
 
 const routing = (
@@ -19,14 +17,7 @@ const routing = (
 					<ul className="navbar-nav mr-auto">
 					  <li className="nav-item active">						
 						<Link className="nav-link" to="/">Home</Link>
-					  </li>
-					  <li className="nav-item">
-						<Link className="nav-link" to="/users">Users</Link>
-					  </li>
-					  <li className="nav-item">
-						<Link className="nav-link" to="/contact">Contact</Link>
-					  </li>
-					  
+					  </li>					  
 					</ul>
 					<form className="form-inline my-2 my-lg-0">
 					  <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
@@ -34,11 +25,7 @@ const routing = (
 					</form>
 				</div>  		  
 			</nav>
-			<Route exact path="/" component={App} />
-			<PrivateRoute path="/users" component={Users} />
-			<Route path="/contact" component={Contact} />
-
-			
+			<Route exact path="/" component={App} />			
   </Router>
 );
 ReactDOM.render(routing, document.getElementById('root'));

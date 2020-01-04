@@ -1,17 +1,15 @@
 import React, {Component} from 'react';
+const config = require("../config/config");
 
 
 class Header extends Component{
-
-
 	handleSearch(event){
 		event.preventDefault();
-		console.log('search', event);return false;
-    fetch('https://reqres.in/api/users?page=1')
+    fetch(config.BASE_API_URL)
     .then((results ) => {
       results.json().then((userlist) =>{
-        this.setState({ person: userlist.data }, function(){});
-        this.setState({ paging: userlist }, function(){});          
+        this.setState({ showData: userlist.results }, function(){});
+        this.setState({ paging: userlist.info }, function(){});          
       });         
     });    
   }
