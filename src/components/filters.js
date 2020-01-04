@@ -1,9 +1,5 @@
 import React, { Component } from "react";
 import { Route, Redirect, withRouter } from "react-router-dom";
-const axios = require("axios");
-const config = require("../config/config");
-const statusCodes = require("../config/statusCodes");
-const errMessages = require("../config/errMessages");
 class Filters extends Component {
   constructor(props) {
     super(props);

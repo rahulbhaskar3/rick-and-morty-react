@@ -19,6 +19,7 @@ class Home extends Component {
     };
     this.appliedFilters = [];
     this.getFilteredResults = this.getFilteredResults.bind(this);
+    console.log(this.state);
   }
 
   componentDidMount() {
@@ -126,12 +127,13 @@ class Home extends Component {
 
   }
 
-  removeFilter(filterVal){
+  removeFilter(filterVal){ alert('remove');
     console.log(filterVal);
   }
 
   render() {
     let renderPageNumbers = '';
+    console.log(this.state.paging);
     if(Object.entries(this.state.paging).length !== 0){
       let pageNumberState = this.state.paging.pages;
       const pageNumbers = [];
@@ -163,12 +165,16 @@ class Home extends Component {
     // [ ID, Name, Status, Species, Gender, Image, Created, Origin, Last Location, etc]
     return (
       <div className="card-container">
-        {Object.entries(this.state.appliedFilters).length !== 0 ? <AppliedFilters filterData={this.state.appliedFilters}  onClick={this.removeFilter(this.state.appliedFilters)}  /> : null}
+        {
+          Object.entries(this.state.appliedFilters).length !== 0 ? 
+            <AppliedFilters filterData={this.state.appliedFilters}  onClick={this.removeFilter(this.state.appliedFilters)}  /> : 
+            null
+        }
         
         {
-			this.state.dataLoaded?
-			<Filters filterData={this.state.filters} applyFilter={this.getFilteredResults} />:null
-		}
+			    this.state.dataLoaded?
+			    <Filters filterData={this.state.filters} applyFilter={this.getFilteredResults} />:null
+    		}
 
         <div className="product-section">
           {this.state.showData.map((listValue, index) => {

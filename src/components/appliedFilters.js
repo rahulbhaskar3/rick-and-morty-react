@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import { Route, Redirect, withRouter } from "react-router-dom";
-// const axios = require("axios");
 const config = require("../config/config");
-// const statusCodes = require("../config/statusCodes");
-// const errMessages = require("../config/errMessages");
 class AppliedFilters extends Component {
   constructor(props) {
     super(props);
@@ -14,7 +11,7 @@ class AppliedFilters extends Component {
       const filterHtml = this.props.filterData.map( (item, index) => {
         return <div class="alert alert-dismissible fade show" role="alert">
             {item.value}
-            <button onClick={this.props.onClick} type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <button onClick={this.props.onClick} type="button" className="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
