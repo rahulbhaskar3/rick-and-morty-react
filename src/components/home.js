@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { Route, Redirect, withRouter } from "react-router-dom";
 import "../home.scss";
 import Filters from "../components/filters";
@@ -6,27 +6,19 @@ import Character from "../components/character";
 import AppliedFilters from "../components/appliedFilters";
 const config = require("../config/config");
 
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showData: [],
-      currentPage: Number,
-      paging: {},
-      filters: {},
-	  appliedFilters: [],
-	  dataLoaded:false
-    };
-    this.appliedFilters = [];
-    this.getFilteredResults = this.getFilteredResults.bind(this);
-    console.log(this.state);
-  }
+const Home = () => {
+  const [showData, setShowData] = useState([]);
+  const [appliedFilters, setAppliedFilter] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [paging, setPaging] = useState({});
+  const [filters, setFilters] = useState({});
+  const [dataLoaded, setDataLoaded] = useState(false);
 
-  componentDidMount() {
-    this.GetShowData();
-  }
+  useEffect(() => {
+    GetShowData();
+  }, []);
 
-  GetShowData(pageNum = 0) {
+  const GetShowData = (pageNum = 0) => {
     let URL;
     if (pageNum != "" && pageNum != 0) {
       URL = config.BASE_API_URL + "?page=" + pageNum;
@@ -35,8 +27,7 @@ class Home extends Component {
     }
     fetch(URL).then(results => {
       results.json().then(showDataList => {
-        if(showDataList.results.length > 0){  
-          
+        if (showDataList.results.length > 0) {
           let speciesFilter = [
             ...new Set(showDataList.results.map(data => data.species))
           ];
@@ -51,101 +42,120 @@ class Home extends Component {
             gender: genderFilter,
             origin: originFilter
           };
-          this.setState({ showData: showDataList.results }, function() {});
-          this.setState({ paging: showDataList.info }, function() {});
-          this.setState({ currentPage: pageNum }, function() {});
-          this.setState({ filters: allFilters }, function() {});
-          this.setState({ dataLoaded: true }, function() {});
-        }else{
-          this.setState({ showData: [] }, function() {});
-          this.setState({ paging: showDataList.info }, function() {});
-          this.setState({ currentPage: 0 }, function() {});
-          this.setState({ filters: {} }, function() {});
-          this.setState({ dataLoaded: false }, function() {});          
+
+          setShowData(showDataList.results);
+          setPaging(showDataList.info);
+          setCurrentPage(pageNum);
+          setFilters(allFilters);
+          setDataLoaded(true);
         }
       });
     });
-  }
+  };
 
-  getFilteredResults(filterVal) {
-    let appliedFiltersLen = this.appliedFilters.length > 0 ? this.appliedFilters.push(filterVal) : '';
-    if(appliedFiltersLen > 0){
-      const exists = this.appliedFilters.some(item => item.type === filterVal.type);
-      if(exists){
-        console.log('exists');
-        this.appliedFilters.map((item, index) => {
-          if(item.type === filterVal.type){
-            item.value = filterVal.value;
-          }
-        });
-      }else{
-        this.appliedFilters.push(filterVal);
+  const getFilteredResults = filterVal => {
+    // console.log(filterVal);
+
+    // case 1 when collection is blank
+    // case 2, when type same, but value same
+    // case 3, when type same , but value different
+    // case 4, when type different, value different
+
+    if (appliedFilters.length == 0) {
+      setAppliedFilter([...appliedFilters].concat([filterVal]));
+    } else {
+      let getTypes = appliedFilters.map(item => item.type);
+      let getValues = appliedFilters.map(item => item.value);
+
+      if (getTypes.includes(filterVal.type)) {
+        if (getValues.includes(filterVal.value)) {
+          //case 3 nothing todo
+        } else {
+          setAppliedFilter(
+            [
+              ...appliedFilters.filter(item => item.value == filterVal.value)
+            ].concat([filterVal])
+          );
+        }
+      } else {
+        //case 4
+        setAppliedFilter([...appliedFilters].concat([filterVal]));
       }
-    }else{
-      this.appliedFilters.push(filterVal);
     }
-    this.setState({ appliedFilters: this.appliedFilters}, function() {
-      console.log(this.state.appliedFilters);
-      let filterURL = this.constructUrl(this.state.appliedFilters);
-      this.callFilterHandler(filterURL);
-    });
-    
-  }
 
-  callFilterHandler(URL, pageNum=0){
-    console.log(URL);
+    console.log(appliedFilters);
+    callFilterHandler(constructUrl(appliedFilters));
+  };
+
+  const callFilterHandler = (URL, pageNum = 0) => {
+    // console.log(URL);
     fetch(URL).then(results => {
       results.json().then(showDataList => {
-        console.log(showDataList);
-        this.setState({ showData: showDataList.results }, function() {});
-        this.setState({ paging: showDataList.info }, function() {});
-        this.setState({ currentPage: pageNum }, function() {});
-        this.setState({ dataLoaded: true }, function() {});
+        // console.log(showDataList);
+
+        setShowData(showDataList.results);
+        setPaging(showDataList.info);
+        setCurrentPage(pageNum);
       });
     });
-  }
+  };
 
-  constructUrl(filters){
-    let qs = '';let filterURL='';
-    for(var key in filters) {
+  const constructUrl = filters => {
+    let qs = "";
+    let filterURL = "";
+    for (var key in filters) {
       // console.log(filters[key].type);
       let filterType = filters[key].type;
       let filterValue = filters[key].value;
-      console.log(filterType, filterValue);
+      // console.log(filterType, filterValue);
       // if(qs.indexOf(filterType) !== -1)
-      qs += encodeURIComponent(filterType) + "=" + encodeURIComponent(filterValue) + "&";
+      qs +=
+        encodeURIComponent(filterType) +
+        "=" +
+        encodeURIComponent(filterValue) +
+        "&";
 
-      console.log('qs', qs);
+      // console.log("qs", qs);
     }
-    if (qs.length > 0){
-      qs = qs.substring(0, qs.length-1); //chop off last "&"
+    if (qs.length > 0) {
+      qs = qs.substring(0, qs.length - 1); //chop off last "&"
       filterURL = filterURL + "?" + qs;
     }
 
-    console.log(filterURL);
-    return config.BASE_API_URL+filterURL
+    // console.log(filterURL);
+    return config.BASE_API_URL + filterURL;
+  };
 
-  }
+  const removeFilter = item => {
+    console.log(appliedFilters, item);
 
-  removeFilter(filterVal){ alert('remove');
-    console.log(filterVal);
-  }
+    // this.setState(
+    //   {
+    //     appliedFilters: this.state.appliedFilters.filter(
+    //       i => i.type != item.type && i.value != item.value
+    //     )
+    //   },
+    //   function() {}
+    // );
+    setAppliedFilter(
+      appliedFilters.filter(i => i.type != item.type && i.value != item.value)
+    );
+  };
 
-  render() {
-    let renderPageNumbers = '';
-    console.log(this.state.paging);
-    if(Object.entries(this.state.paging).length !== 0){
-      let pageNumberState = this.state.paging.pages;
+  {
+    let renderPageNumbers = "";
+    if (Object.entries(paging).length !== 0) {
+      let pageNumberState = paging.pages;
       const pageNumbers = [];
       for (let i = 1; i <= pageNumberState; i++) {
         pageNumbers.push(i);
-      }  
-    
+      }
+
       renderPageNumbers = pageNumbers.map(number => {
         return (
           <li
             className={
-              this.state.currentPage === number ? "active page-item" : "page-item"
+              currentPage === number ? "active page-item" : "page-item"
             }
             key={number}
             id={number}
@@ -153,7 +163,7 @@ class Home extends Component {
             <a
               className="page-link"
               title={config.BASE_API_URL + "?page=" + number}
-              onClick={() => this.GetShowData(number)}
+              onClick={() => GetShowData(number)}
               href="javascript:void(0)"
             >
               {number}
@@ -165,29 +175,31 @@ class Home extends Component {
     // [ ID, Name, Status, Species, Gender, Image, Created, Origin, Last Location, etc]
     return (
       <div className="card-container">
-        {
-          Object.entries(this.state.appliedFilters).length !== 0 ? 
-            <AppliedFilters filterData={this.state.appliedFilters}  onClick={this.removeFilter(this.state.appliedFilters)}  /> : 
-            null
-        }
-        
-        {
-			    this.state.dataLoaded?
-			    <Filters filterData={this.state.filters} applyFilter={this.getFilteredResults} />:null
-    		}
+        {Object.entries(appliedFilters).length !== 0 ? (
+          <AppliedFilters
+            filterData={appliedFilters}
+            removeFilter={removeFilter}
+          />
+        ) : null}
+
+        {dataLoaded ? (
+          <Filters filterData={filters} applyFilter={getFilteredResults} />
+        ) : null}
 
         <div className="product-section">
-          {this.state.showData.map((listValue, index) => {
+          {showData.map((listValue, index) => {
             let divStyle = { width: "18rem" };
             return <Character data={listValue} />;
           })}
         </div>
         <nav aria-label="Page navigation example" className="pagination-custom">
-          {renderPageNumbers !== '' ? <ul className="pagination">{renderPageNumbers}</ul> : null}
+          {renderPageNumbers !== "" ? (
+            <ul className="pagination">{renderPageNumbers}</ul>
+          ) : null}
         </nav>
       </div>
     );
   }
-}
+};
 
 export default withRouter(Home);

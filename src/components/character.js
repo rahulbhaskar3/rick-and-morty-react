@@ -1,10 +1,6 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import { Route, Redirect, withRouter } from "react-router-dom";
-// const axios = require('axios');
-// const config = require('../config/config');
-// const statusCodes = require('../config/statusCodes');
-// const errMessages = require('../config/errMessages');
 const Character = props => {
   return (
     <div className="col-sm-3">
