@@ -1,15 +1,10 @@
-import React, {Component} from 'react';
+import React from 'react';
 import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 const config = require("../config/config");
 
-class Header extends Component{
-	constructor(props) {
-		super(props);
-	}	
-
-	render(){
-		return(
+const Header = () => {
+	return(
 			<nav className="navbar navbar-expand-lg navbar-light bg-light">
 				<a className="navbar-brand" href="javascript:void(0)">Demo App</a>
 					<button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,8 +18,7 @@ class Header extends Component{
 					</ul>				
 				</div>  		  
 			</nav>			
-		);
-	}
-}
+		);		
+};
 
 export default Header;
